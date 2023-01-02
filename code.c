@@ -17,26 +17,26 @@ struct Appointment appointments[100];
 
 void load_appointments() {
   // Read file content and load into array
-  FILE * dosya = fopen("appointments.txt", "r");
+  FILE * fl = fopen("appointments.txt", "r");
   
-  while (fscanf(dosya, "%s %[^,]%*c %d %*[,] %d", appointments[numAppointments].name, appointments[numAppointments].surname, & appointments[numAppointments].day, & appointments[numAppointments].time) == 4) {
+  while (fscanf(fl, "%s %[^,]%*c %d %*[,] %d", appointments[numAppointments].name, appointments[numAppointments].surname, & appointments[numAppointments].day, & appointments[numAppointments].time) == 4) {
   
     numAppointments++;
   }
-  fclose(dosya);
+  fclose(fl);
 }
 
 void save_appointments() {
   // Write array to file
-  FILE * dosya = fopen("appointments.txt", "w");
+  FILE * fl = fopen("appointments.txt", "w");
   for (int i = 0; i < numAppointments; i++) {
-    fprintf(dosya, "%s %s, %d, %d\n", appointments[i].name, appointments[i].surname, appointments[i].day, appointments[i].time);
+    fprintf(fl, "%s %s, %d, %d\n", appointments[i].name, appointments[i].surname, appointments[i].day, appointments[i].time);
   }
-  fclose(dosya);
+  fclose(fl);
 }
 
 void show_appointments() {
-  // Mevcut olan tüm randevuları göster
+  // Show all appointments
   for (int i = 0; i < numAppointments; i++) {
     printf("%s %s %d %d\n", appointments[i].name, appointments[i].surname, appointments[i].day, appointments[i].time);
   }
@@ -68,7 +68,7 @@ int main() {
     scanf("%d", & choice);
 
     switch (choice) {
-    case 1: // randevuları göster
+    case 1: // Show Appointments
       show_appointments();
       break;
 
@@ -104,7 +104,7 @@ int main() {
         printf("Day (1-31): ");
         scanf("%d", & day);
         if(day >= 1 && day <= 31){
-          // Güne göre randevuları arayın
+          // Search appointments by day
           for (int i = 0; i < numAppointments; i++) {
             if (appointments[i].day == day) {
               printf("%s %s %d %d\n", appointments[i].name, appointments[i].surname, appointments[i].day, appointments[i].time);
@@ -189,7 +189,7 @@ int main() {
           }
           numAppointments--;
           patient_exist = 1;
-          show_appointments();
+          save_appointments();
           printf("The appointment has been deleted!\n");
           break;
         }
@@ -198,7 +198,7 @@ int main() {
       break;
     
     case 5:
-      show_appointments();
+      save_appointments();
       printf("Exit...\n");
       return 0;
       break;
