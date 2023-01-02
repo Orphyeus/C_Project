@@ -1,0 +1,212 @@
+#include <stdio.h>
+
+#include <stdlib.h>
+
+#include <string.h>
+
+struct Randevu {
+  char name[50];
+  char surname[50];
+  int day;
+  int time;
+};
+
+int numAppointments = 0;
+struct Randevu appointments[100];
+
+
+void randevulari_yukle() {
+  // Dosya içeriğini oku ve diziye yükle
+  FILE * dosya = fopen("randevular.txt", "r");
+  
+  while (fscanf(dosya, "%s %[^,]%*c %d %*[,] %d", appointments[numAppointments].name, appointments[numAppointments].surname, & appointments[numAppointments].day, & appointments[numAppointments].time) == 4) {
+  
+    numAppointments++;
+  }
+  fclose(dosya);
+}
+
+void randevulari_kaydet() {
+  // Diziyi dosyaya yaz
+  FILE * dosya = fopen("randevular.txt", "w");
+  for (int i = 0; i < numAppointments; i++) {
+    fprintf(dosya, "%s %s, %d, %d\n", appointments[i].name, appointments[i].surname, appointments[i].day, appointments[i].time);
+  }
+  fclose(dosya);
+}
+
+void randevulari_goster() {
+  // Mevcut olan tüm randevuları göster
+  for (int i = 0; i < numAppointments; i++) {
+    printf("%s %s %d %d\n", appointments[i].name, appointments[i].surname, appointments[i].day, appointments[i].time);
+  }
+}
+
+int main() {
+  int size = 20;
+  
+  char name[50];
+  char surname[50];
+  int day;
+  int time;
+
+  char deletedName[50];
+  char deletedSurname[50];
+  
+  randevulari_yukle();
+  
+  while (1) {
+    printf("\nMenü:\n");
+    printf("1. Randevuları göster\n");
+    printf("2. Randevu ara\n");
+    printf("3. Randevu ver\n");
+    printf("4. Randevu sil\n");
+    printf("5. Exit\n\n");
+
+    int secim;
+    printf("Seçiminiz: ");
+    scanf("%d", & secim);
+
+    switch (secim) {
+    case 1: // randevuları göster
+      randevulari_goster();
+      break;
+
+    case 2:
+
+      printf("1. Ada göre randevu ara\n");
+      printf("2. Güne göre randevu ara\n");
+      printf("3. Geri Dön\n");
+
+      int secim2;
+      printf("\nSeçiminiz: ");
+      scanf("%d", &secim2);
+
+      switch (secim2) {
+      case 1:
+        printf("Hasta adı: ");
+        scanf("%s %s", name, surname);
+        
+        int patient_exist = 0;
+        
+        // Hasta adına göre randevuları arayın
+        for (int i = 0; i < numAppointments; i++) {
+          if (strcmp(appointments[i].name, name) == 0 && strcmp(appointments[i].surname, surname) == 0) {
+            printf("\n%s %s %d %d\n", appointments[i].name, appointments[i].surname, appointments[i].day, appointments[i].time);
+            patient_exist = 1;
+            break;
+          }
+        }
+        printf(patient_exist ? "" : "\nHasta bulunamadı\n");
+        break;
+
+      case 2:
+        printf("Gün (1-31): ");
+        scanf("%d", & day);
+        if(day >= 1 && day <= 31){
+          // Güne göre randevuları arayın
+          for (int i = 0; i < numAppointments; i++) {
+            if (appointments[i].day == day) {
+              printf("%s %s %d %d\n", appointments[i].name, appointments[i].surname, appointments[i].day, appointments[i].time);
+            }
+          }
+        }else{
+          printf("\nGecersiz gün girdiniz!\n");
+        }
+      
+      break;
+      case 3:
+        break;
+
+      default:
+        printf("Geçersiz seçim. Lütfen tekrar deneyin.\n");
+      }
+    break;
+
+    case 3:
+
+      printf("Hasta adı: ");
+      scanf("%s ", name);
+
+      printf("Randevu günü (1-31): ");
+      scanf("%d", & day);
+
+      if(day < 1 || day > 31){
+        printf("Gecersiz bir gün girdiniz!");
+        break;
+      }
+
+      printf("Randevu saati (9-17): ");
+      scanf("%d", & time);
+
+      if(time < 9 || time > 17){
+        printf("Gecersiz bir saat girdiniz!");
+        break;
+      }
+
+      // Randevu kontrol et
+      int appointmentExists = 0;
+      for (int i = 0; i < numAppointments; i++) {
+        if (appointments[i].day == day && appointments[i].time == time) {
+          appointmentExists = 1;
+          break;
+        }
+      }
+
+      if (appointmentExists) {
+        printf("Üzgünüz, o gün ve saat için randevu dolu. Lütfen başka bir gün ve saat seçiniz.\n");
+      } else {
+        //Struct boyutu dolduysa malloc ile boyut 10 arttırılır
+        if(numAppointments >= size){
+          size +=10;
+          struct Randevu *appointments = malloc(size * sizeof(struct Randevu));
+        }
+        
+        // Randevuyu ekle
+        strcpy(appointments[numAppointments].name, name);
+        strcpy(appointments[numAppointments].surname, surname);
+        appointments[numAppointments].day = day;
+        appointments[numAppointments].time = time;
+        numAppointments++;
+        printf("Randevu başariyla eklendi.\n");
+      }
+      break;
+
+    case 4:
+      printf("Silmek istediğiniz hastanin adini girin: ");
+      scanf("%s %s", deletedName, deletedSurname);
+
+      int patient_exist = 0;
+      
+      //Randevu Silme
+      for (int i = 0; i < numAppointments; i++) {
+        if (strcmp(appointments[i].name, deletedName) == 0 && strcmp(appointments[i].surname, deletedSurname) == 0) {
+          for (int j = i; j < numAppointments - 1; j++) {
+            strcpy(appointments[j].name, appointments[j + 1].name);
+            strcpy(appointments[j].surname, appointments[j + 1].surname);
+            appointments[j + 1].day = appointments[j].day;
+            appointments[j + 1].time = appointments[j].time;
+          }
+          numAppointments--;
+          patient_exist = 1;
+          randevulari_kaydet();
+          printf("Randevu silindi.\n");
+          break;
+        }
+      }
+      printf(patient_exist ? "" : "\nHasta bulunamadı\n");
+      break;
+    
+    case 5:
+      randevulari_kaydet();
+      printf("Çikiş yapiliyor...\n");
+      return 0;
+      break;
+      
+
+    default:
+      printf("Geçersiz seçim. Lütfen tekrar deneyin.\n");
+    }
+  }
+  return 0;
+}
