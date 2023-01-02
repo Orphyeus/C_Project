@@ -14,13 +14,12 @@ struct Appointment {
 int numAppointments = 0;
 struct Appointment appointments[100];
 
-
 void load_appointments() {
   // Read file content and load into array
   FILE * fl = fopen("appointments.txt", "r");
-  
+
   while (fscanf(fl, "%s %[^,]%*c %d %*[,] %d", appointments[numAppointments].name, appointments[numAppointments].surname, & appointments[numAppointments].day, & appointments[numAppointments].time) == 4) {
-  
+
     numAppointments++;
   }
   fclose(fl);
@@ -44,7 +43,7 @@ void show_appointments() {
 
 int main() {
   int size = 20;
-  
+
   char name[50];
   char surname[50];
   int day;
@@ -52,9 +51,9 @@ int main() {
 
   char deletedName[50];
   char deletedSurname[50];
-  
+
   load_appointments();
-  
+
   while (1) {
     printf("\nMenü:\n");
     printf("1. Show Appointments\n");
@@ -80,15 +79,15 @@ int main() {
 
       int choice2;
       printf("\nYour choice: ");
-      scanf("%d", &choice2);
+      scanf("%d", & choice2);
 
       switch (choice2) {
       case 1:
         printf("Patient name: ");
         scanf("%s %s", name, surname);
-        
+
         int patient_exist = 0;
-        
+
         // Search appointments by patient name
         for (int i = 0; i < numAppointments; i++) {
           if (strcmp(appointments[i].name, name) == 0 && strcmp(appointments[i].surname, surname) == 0) {
@@ -103,35 +102,35 @@ int main() {
       case 2:
         printf("Day (1-31): ");
         scanf("%d", & day);
-        if(day >= 1 && day <= 31){
+        if (day >= 1 && day <= 31) {
           // Search appointments by day
           for (int i = 0; i < numAppointments; i++) {
             if (appointments[i].day == day) {
               printf("%s %s %d %d\n", appointments[i].name, appointments[i].surname, appointments[i].day, appointments[i].time);
             }
           }
-        }else{
+        } else {
           printf("\nYou entered an invalid day!\n");
         }
-      
-      break;
+
+        break;
       case 3:
         break;
 
       default:
         printf("Invalid selection. Please try again!\n");
       }
-    break;
+      break;
 
     case 3:
 
       printf("Patient Name: ");
-      scanf("%s ", name);
+      scanf("%s %s", name, surname);
 
       printf("Appointment Day (1-31): ");
       scanf("%d", & day);
 
-      if(day < 1 || day > 31){
+      if (day < 1 || day > 31) {
         printf("You entered an invalid day!");
         break;
       }
@@ -139,7 +138,7 @@ int main() {
       printf("Appointment Time (9-17): ");
       scanf("%d", & time);
 
-      if(time < 9 || time > 17){
+      if (time < 9 || time > 17) {
         printf("You entered an invalid time!");
         break;
       }
@@ -157,11 +156,11 @@ int main() {
         printf("Sorry, appointments are full for that day and time. Please select another day and time!\n");
       } else {
         //If struct size is full, size is increased by 10 with malloc
-        if(numAppointments >= size){
-          size +=10;
-          struct Appointment *appointments = malloc(size * sizeof(struct Appointment));
+        if (numAppointments >= size) {
+          size += 10;
+          struct Appointment * appointments = malloc(size * sizeof(struct Appointment));
         }
-        
+
         // Randevuyu ekle
         strcpy(appointments[numAppointments].name, name);
         strcpy(appointments[numAppointments].surname, surname);
@@ -177,7 +176,7 @@ int main() {
       scanf("%s %s", deletedName, deletedSurname);
 
       int patient_exist = 0;
-      
+
       //Deleting an Appointment
       for (int i = 0; i < numAppointments; i++) {
         if (strcmp(appointments[i].name, deletedName) == 0 && strcmp(appointments[i].surname, deletedSurname) == 0) {
@@ -196,13 +195,12 @@ int main() {
       }
       printf(patient_exist ? "" : "\nPatient Not Found!\n");
       break;
-    
+
     case 5:
       save_appointments();
       printf("Exit...\n");
       return 0;
       break;
-      
 
     default:
       printf("Invalid selection. Please try again!\n");
