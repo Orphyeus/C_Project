@@ -167,6 +167,7 @@ int main() {
         appointments[numAppointments].day = day;
         appointments[numAppointments].time = time;
         numAppointments++;
+        save_appointments();
         printf("Appointment successfully added!\n");
       }
       break;
